@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Survey</title>
+</head>
+<body>
+    <h2 id="question">Loading...</h2>
+    <input type="text" id="answer" placeholder="Your answer">
+    <button onclick="submitAnswer()">Submit</button>
+
+    <script>
+        let user_id = "user123";
+        let current_question = { id: "Q1", text: "What is your age?" };
+        document.getElementById("question").innerText = current_question.text;
+
+        function submitAnswer() {
+            const answer = document.getElementById("answer").value;
+            fetch('/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: user_id,
+                    question_id: current_question.id,
+                    question_text: current_question.text,
+                    answer: answer
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.id === "END") {
+                    document.getElementById("question").innerText = data.text;
+                    document.getElementById("answer").style.display = "none";
+                } else {
+                    current_question = data;
+                    document.getElementById("question").innerText = data.text;
+                    document.getElementById("answer").value = "";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
